@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebSocket Test</title>
+  </head>
+  <body>
+    <h2>WebSocket Test</h2>
+    <div id="output"></div>
+  </body>
+  <meta charset="utf-8" />
+
+  <script language="javascript" type="text/javascript">
+    // const socket = new WebSocket("ws://localhost:3000");
+
+    // // Connection opened
+    // socket.addEventListener("open", function (event) {
+    //   socket.send("Hello Server!");
+    //   console.log("connected");
+    // });
+
+    // // Listen for messages
+    // socket.addEventListener("message", function (event) {
+    //   console.log("Message from server ", event.data);
+    // });
+    var wsUri = "ws://localhost:3000";
+    // var wsUri = "https//localhost:8000";
+
+    var output;
+
+    function init() {
+      output = document.getElementById("output");
+      testWebSocket();
+    }
+
+    function testWebSocket() {
+      websocket = new WebSocket(wsUri);
+
+      //   websocket.addEventListener("open");
+
+      websocket.onopen = function (evt) {
+        onOpen(evt);
+      };
+
+      websocket.onmessage = function (evt) {
+        onMessage(evt);
+      };
+
+      websocket.onerror = function (evt) {
+        onError(evt);
+      };
+    }
+
+    function onOpen(evt) {
+      writeToScreen("CONNECTED");
+      doSend("WebSocket rocks");
+    }
+
+    function onMessage(evt) {
+      writeLog(evt);
+      websocket.close();
+    }
+
+    function onError(evt) {
+      writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+    }
+
+    function doSend(message) {
+      writeToScreen("SENT: " + message);
+      websocket.send(message);
+    }
+
+    function writeToScreen(message) {
+      var pre = document.createElement("p");
+      pre.style.wordWrap = "break-word";
+      pre.innerHTML = message;
+      output.appendChild(pre);
+    }
+    function writeLog(message) {
+      var pre = document.createElement("p");
+      pre.style.wordWrap = "break-word";
+      pre.innerHTML = "";
+      var x = "";
+      // console.log(typeof message.data);
+      myObject = JSON.parse(message.data);
+      // console.log(typeof myObject);
+
+      pre.innerHTML = "<div>" + myObject["filename"] + "</div>";
+      output.appendChild(pre);
+
+      myObject["lines"].forEach((element) => {
+        x += "<div>" + element + "</div>";
+        console.log(element);
+      });
+
+      pre.innerHTML = x;
+      output.appendChild(pre);
+    }
+
+    window.addEventListener("load", init, false);
+  </script>
+</html>
